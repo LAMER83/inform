@@ -7,6 +7,8 @@ use App\Http\Controllers\CounterpartyController;
 use App\Http\Controllers\CurrentStatusController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceNameController;
+use App\Http\Controllers\EspDeviceController;
+use App\Http\Controllers\EspStoreController;
 use App\Http\Controllers\FactoryGuesController;
 use App\Http\Controllers\FactoryMaterialController;
 use App\Http\Controllers\FilialController;
@@ -39,8 +41,10 @@ use App\Http\Controllers\StoragePhaseController;
 use App\Http\Controllers\SutkiController;
 use App\Http\Controllers\SzrController;
 use App\Http\Controllers\TakeController;
+use App\Http\Controllers\ThermometerController;
 use App\Http\Controllers\VidposevaController;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Models\Thermometer;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\InfoController;
 use \App\Http\Controllers\LimitsController;
@@ -116,6 +120,15 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->middleware('guest')->name('password.request');
+
+Route::post('/esp/status', [EspDeviceController::class, 'status'])->withoutMiddleware([VerifyCsrfToken::class]);
+
+Route::middleware('auth_esp_api')->post('/thermometer/store', [ThermometerController::class, 'store'])
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->name('thermometer.store');
+
+Route::get('/test', [EspStoreController::class, 'test'])->withoutMiddleware([VerifyCsrfToken::class]);
+
 
 Route::post('/sms_get', [SmsController::class, 'smsGet'])->withoutMiddleware([VerifyCsrfToken::class]);
 Route::post('/sms_in', [SmsController::class, 'smsIn'])->withoutMiddleware([VerifyCsrfToken::class])->middleware('throttle:smsIn');
